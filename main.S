@@ -3,6 +3,54 @@
     .global _start
 
 _start:
+//M4 RTOS loader snipet prep
+    ldr r4, =0x60006400 //fopen addr
+    adr r0, [.LC2] //file name
+    adr r1, [.LC1] //open mode
+    blx r4
+    add r5, r4, #0xc //fread addr
+    mov r3, r0 //file descriptor
+    ldr r0, =0x1ffe4000 //fread destination
+    mov r1, #1 //read unit size
+    mov r2, r0 //read unit count(over size)
+    blx r5
+
+//M4 RTOS preload
+    ldr r4, =0x60006400 //fopen addr
+    adr r0, [.LC3] //file name
+    adr r1, [.LC1] //open mode
+    blx r4
+    add r5, r4, #0xc //fread addr
+    mov r3, r0 //file descriptor
+    ldr r0, =0x37400000 //fread destination
+    mov r1, #1 //read unit size
+    mov r2, r0 //read unit count(over size)
+    blx r5
+
+//M4 RTOS size get
+    ldr r4, =0x60006444 //stat addr
+    adr r0, [.LC3] //file name
+    sub sp, sp, #0x14
+    mov r1, sp
+    blx r4
+    ldr r0, =0x373ffffc //store size before data
+    ldr r1, [sp,#0x10]
+    str r1, [r0]
+
+//M4 interrupt prep
+    ldr r4, =0x1ffd20d0 //NVIC MCM vector
+    ldr r5, =0x1ffe4001 //loader addr | 0x1(thumb)
+    str r5, [r4] //override interrupt handler
+    
+//wait until M4 RTOS copied
+    ldr r4, =0x1ffd2000 //get sram img start addr
+    add r0, r0, #4 //get dram rtos addr
+    ldr r3, [r0, r1] //get last word of rtos on dram
+rtos_loop:
+    ldr r2, [r4,r1] //get last word of rtos on sram
+    cmp r2,r3
+    bne rtos_loop
+
 //preload U-Boot from sd
     ldr r4, =0x60006400 //fopen addr
     adr r0, [.LC0] //file name
@@ -20,6 +68,10 @@ _start:
     .ascii  "SD0:\\u-boot.bin\000"
     .LC1:
     .ascii  "r\000"
+    .LC2:
+    .ascii  "SD0:\\m4_loader.bin\000"
+    .LC3:
+    .ascii  "SD0:\\m4_rtos.bin\000"
 .align 4
     continue:
     cpsid if //disable interrupt

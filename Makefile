@@ -4,7 +4,7 @@ CC:=$(CROSS_COMPILE)gcc
 STRIP:=$(CROSS_COMPILE)strip
 
 .PHONY:
-all: AppMain.bin
+all: AppMain.bin m4_loader.bin
 
 .PHONY:
 clean:
@@ -13,3 +13,7 @@ clean:
 AppMain.bin:
 	@$(AS) main.S -o main.elf
 	@./extract.py -p main.elf AppMain.bin
+
+m4_loader.bin:
+	@$(AS) m4_loader.S -mcpu=cortex-m4 -o m4_loader.elf
+	@./extract.py -p m4_loader.elf m4_loader.bin
