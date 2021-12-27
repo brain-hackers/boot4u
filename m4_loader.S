@@ -6,6 +6,10 @@
 
 _start:
     cpsid i
+//LPTMR0 interrupt stop
+    ldr r0, =0x4102e000
+    eor r1, r1, r1
+    str r1, [r0]
 //M4 RTOS loader
     ldr r0, =0x1FFD2000 //M4 SRAM start addr
     ldr r1, =0x67400000 //M4 RTOS preload addr
