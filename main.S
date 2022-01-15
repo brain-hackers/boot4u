@@ -26,7 +26,7 @@ _start:
 
 //copy U-Boot to head of RAM 
     ldr r3, =0x37500000 //copy start
-    ldr r1, =0x37540000 //copy end
+    add r1, r3, r0 //copy end
     copy_loop:
     mov r2, r3
     sub r3, r3, #0x7500000 //copy distination
