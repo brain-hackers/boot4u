@@ -34,7 +34,7 @@ _start:
     cmp r2, r1
     str r0, [r3]
     mov r3, r2
-    bne copy_loop
+    blt copy_loop
 
 //RAM clear
     ldr r2,=0x60200000 //clear start
