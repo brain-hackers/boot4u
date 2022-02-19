@@ -98,6 +98,13 @@ rtos_loop:
     str r1,[r2],#4
     beq clear_loop
 
+
+//LCDIF CUR_BUF change
+    ldr r1,=0x40aa0000 //LCDIF_CTRL
+    ldr r3,=0x62000000 //new framebuffer addr
+    str r3,[r1,#0x50]
+
+
     ldr r0, =0x60000000
 
     mrc p15, 0, r8, c14, c2, 1
