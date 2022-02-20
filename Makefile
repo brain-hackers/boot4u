@@ -8,10 +8,13 @@ all: AppMain.bin m4_loader.bin
 
 .PHONY:
 clean:
-	@rm -f *.bin *.elf
+	@rm -f *.bin *.elf pixels.c
 
-AppMain.bin:
-	@$(AS) main.S -o main.elf
+pixels.c:
+	@python3 img2c.py image.jpg pixels.c
+
+AppMain.bin: pixels.c
+	@$(CC) -nostdlib -static -fPIC -mcpu=cortex-a7 main.S pixels.c -o main.elf
 	@./extract.py -p main.elf AppMain.bin
 
 m4_loader.bin:

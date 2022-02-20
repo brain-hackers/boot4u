@@ -3,6 +3,7 @@
     .global _start
 
 _start:
+    bl load_pixels
 //M4 RTOS loader snipet prep
     ldr r4, =0x60006400 //fopen addr
     adr r0, [.LC2] //file name
